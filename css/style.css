@@ -1,5 +1,7 @@
+/* css/style.css */
+
 body {
-    font-family: sans-serif;
+    font-family: Arial, sans-serif;
     margin: 0;
     padding: 0;
     background-color: #f4f4f4;
@@ -9,93 +11,157 @@ body {
 header {
     background-color: #4CAF50;
     color: white;
-    padding: 1rem;
+    padding: 1rem 0;
     text-align: center;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
 }
 
 main {
-    padding: 1rem;
-}
-
-#map {
-    height: 400px; /* Hauteur de la carte, essentielle pour Leaflet */
-    width: 100%;
-    background-color: #eee;
-    border: 1px solid #ccc;
+    padding: 20px;
+    max-width: 900px;
+    margin: 20px auto;
+    background-color: white;
     border-radius: 8px;
-    margin-bottom: 1rem;
+    box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
+h1, h2 {
+    color: #333;
+}
+
+/* Styles pour les sections */
+section {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    background-color: #fff;
+}
+
+/* Styles pour les boutons généraux */
+button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1rem;
+    margin-right: 10px;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Styles spécifiques pour les boutons de sport */
+.sport-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px; /* Espace entre les boutons de sport */
+    margin-top: 20px;
+}
+
+.sport-buttons button {
+    background-color: #28a745; /* Couleur verte pour les sports */
+    padding: 15px 30px;
+    font-size: 1.2rem;
+    border-radius: 7px;
+}
+
+.sport-buttons button:hover {
+    background-color: #218838;
+}
+
+/* Styles pour la liste des parcours */
 #parcours-list ul {
     list-style: none;
     padding: 0;
 }
 
 #parcours-list li {
-    background-color: white;
-    margin-bottom: 0.5rem;
-    padding: 1rem;
+    background-color: #f9f9f9;
+    margin-bottom: 10px;
+    padding: 15px;
+    border: 1px solid #eee;
     border-radius: 5px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
 }
 
-#parcours-list li a {
-    text-decoration: none;
+#parcours-list li h3 {
+    margin: 0 0 5px 0;
     color: #007bff;
-    font-weight: bold;
 }
 
-#parcours-list li a:hover {
-    text-decoration: underline;
+#parcours-list li p {
+    margin: 0;
+    font-size: 0.9em;
+    color: #666;
+}
+
+#parcours-list li button {
+    align-self: flex-end; /* Aligner le bouton à droite */
+    background-color: #17a2b8; /* Une couleur différente pour "Voir sur la carte" */
+}
+
+#parcours-list li button:hover {
+    background-color: #138496;
+}
+
+/* Styles pour la carte */
+#map {
+    height: 400px;
+    width: 100%;
+    border-radius: 8px;
+    margin-top: 15px;
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.1);
 }
 
 #controls {
-    text-align: center;
-    padding: 1rem;
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-#controls button {
-    background-color: #007bff;
-    color: white;
-    border: none;
-    padding: 0.8rem 1.5rem;
-    margin: 0.5rem;
+    margin-top: 15px;
+    padding: 10px;
+    background-color: #e9ecef;
     border-radius: 5px;
-    cursor: pointer;
-    font-size: 1rem;
-}
-
-#controls button:hover {
-    background-color: #0056b3;
+    text-align: center;
 }
 
 #current-info {
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+/* --- NOUVEAU: Styles pour le bouton de retour --- */
+.back-button {
+    background-color: #6c757d; /* Couleur grise pour "Précédent" */
+    margin-top: 15px; /* Pour espacer du contenu */
+    margin-right: 10px; /* Espacement si d'autres boutons sont à côté */
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: #5a6268;
+}
+
+/* Pour le positionnement des boutons de retour dans les sections */
+#parcours-list .section-controls,
+#map-section .section-controls {
+    display: flex;
+    justify-content: flex-start; /* Aligner à gauche */
+    align-items: center;
+    margin-bottom: 10px; /* Espace en dessous des contrôles */
 }
 
 footer {
     text-align: center;
-    padding: 1rem;
-    margin-top: 2rem;
+    padding: 1rem 0;
     background-color: #333;
     color: white;
-    font-size: 0.9rem;
-}
-
-/* Styles pour mobile (responsive design) */
-@media (max-width: 600px) {
-    header, main, footer {
-        padding: 0.5rem;
-    }
-    #map {
-        height: 300px;
-    }
-    #controls button {
-        width: 100%;
-        margin: 0.5rem 0;
-    }
+    margin-top: 30px;
 }
