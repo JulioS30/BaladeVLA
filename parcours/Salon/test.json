@@ -1,0 +1,23 @@
+{
+  "id": "test_salon",
+  "name": "Salon-de-Pce / 5km",
+  "description": "Parcours test de 5km.",
+  "pointsInteret": [
+    {
+      "lat": 43.635823,
+      "lng": 5.106614,
+      "titre": "Pinède St-Léon",
+      "descriptionTextuelle": "Admirez la pinède Saint-Léon, son parcours santé et son accrobranche.",
+      "fichierAudio": "parcours/parcours_cretes/audio/vue_panoramique.mp3",
+      "triggered": false
+    },
+    {
+      "lat": 48.8490,
+      "lng": 2.3480,
+      "titre": "Source Fraîche",
+      "descriptionTextuelle": "Une source d'eau potable, idéale pour se rafraîchir. Pensez à recharger vos gourdes ici !",
+      "fichierAudio": "parcours/parcours_cretes/audio/source_fraiche.mp3",
+      "triggered": false
+    }
+  ],
+}
