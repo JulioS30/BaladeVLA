@@ -28,14 +28,21 @@
                 <button id="btn-back-to-sports" class="back-button">Précédent</button>
                 <h2>Nos Parcours</h2>
             </div>
-            <p>Sélectionnez un parcours ci-dessous.</p>
+            <div id="parcours-list-container">
+                <p>Sélectionnez un parcours ci-dessous.</p>
+                <ul id="parcours-ul"></ul>
+            </div>
         </section>
 
         <section id="map-section" style="display:none;">
             <div class="section-controls">
                 <button id="btn-back-to-parcours" class="back-button">Précédent</button>
-                <h2>Détail du Parcours</h2>
+                <h2 id="parcours-detail-title">Détail du Parcours</h2>
             </div>
+            <p id="parcours-detail-info">
+                Distance: <span id="parcours-detail-distance">N/A</span> |
+                Dénivelé: <span id="parcours-detail-denivele">N/A</span>
+            </p>
             <div id="map"></div>
             <div id="controls">
                 <p id="current-info">En attente de démarrage...</p>
