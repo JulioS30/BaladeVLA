@@ -3,39 +3,88 @@ let map;
 let currentGuidanceId = null;
 let watchId; // Pour stocker l'ID du watcher de géolocalisation
 let currentAudio = null; // Pour gérer l'audio en cours de lecture
+let lastSportSelected = null; // Pour savoir quel sport était sélectionné avant d'aller à la liste des parcours
 
-// --- Mise à jour : Liste des parcours avec le type de sport ---
+// Liste des parcours disponibles (vous ajouterez vos fichiers JSON ici)
 const parcoursList = [
     { id: 'salon_test', name: 'Salon test (Course)', sport: 'running', json: 'parcours/Salon/test.json', gpx: 'parcours/Salon/test.gpx' },
+    { id: 'parcours_rando_1', name: 'Rando Facile (Rando)', sport: 'hiking', json: 'parcours/Rando/rando_facile.json', gpx: 'parcours/Rando/rando_facile.gpx' },
+    { id: 'parcours_course_2', name: 'Course Urbaine (Course)', sport: 'running', json: 'parcours/Course/course_urbaine.json', gpx: 'parcours/Course/course_urbaine.gpx' },
+    { id: 'parcours_rando_2', name: 'Montagne Douce (Rando)', sport: 'hiking', json: 'parcours/Rando/montagne_douce.json', gpx: 'parcours/Rando/montagne_douce.gpx' },
     // Ajoutez d'autres parcours ici avec leur propriété 'sport'
 ];
 
-// --- Récupération des éléments HTML (ajout de ceux pour la sélection de sport) ---
+// Récupération des éléments HTML
 const sportSelectionSection = document.getElementById('sport-selection');
 const parcoursListSection = document.getElementById('parcours-list');
 const mapSection = document.getElementById('map-section');
 const btnRunning = document.getElementById('btn-running');
 const btnHiking = document.getElementById('btn-hiking');
 
+// Nouveaux boutons de retour
+const btnBackToSports = document.getElementById('btn-back-to-sports');
+const btnBackToParcours = document.getElementById('btn-back-to-parcours');
+
 
 document.addEventListener('DOMContentLoaded', () => {
     // Au chargement, afficher la section de sélection de sport et masquer les autres
-    sportSelectionSection.style.display = 'block';
-    parcoursListSection.style.display = 'none';
-    mapSection.style.display = 'none';
+    showSection(sportSelectionSection);
 
     // Attacher les écouteurs d'événements aux boutons de sport
-    btnRunning.addEventListener('click', () => displayParcoursList('running'));
-    btnHiking.addEventListener('click', () => displayParcoursList('hiking'));
+    btnRunning.addEventListener('click', () => {
+        lastSportSelected = 'running'; // Mémorise le sport sélectionné
+        displayParcoursList('running');
+    });
+    btnHiking.addEventListener('click', () => {
+        lastSportSelected = 'hiking'; // Mémorise le sport sélectionné
+        displayParcoursList('hiking');
+    });
+
+    // Attacher les écouteurs d'événements aux boutons de retour
+    btnBackToSports.addEventListener('click', () => {
+        showSection(sportSelectionSection); // Retourne à la sélection de sport
+    });
+    btnBackToParcours.addEventListener('click', () => {
+        // Retourne à la liste des parcours du sport précédemment sélectionné
+        if (lastSportSelected) {
+            displayParcoursList(lastSportSelected);
+        } else {
+            // Si pour une raison quelconque lastSportSelected n'est pas défini,
+            // on pourrait revenir à la sélection de sport par défaut.
+            showSection(sportSelectionSection);
+        }
+    });
 });
 
+/**
+ * Fonction utilitaire pour afficher une section et cacher les autres.
+ * @param {HTMLElement} sectionToShow La section HTML à afficher.
+ */
+function showSection(sectionToShow) {
+    sportSelectionSection.style.display = 'none';
+    parcoursListSection.style.display = 'none';
+    mapSection.style.display = 'none';
+    sectionToShow.style.display = 'block';
+}
 
 // Fonction pour afficher la liste des parcours filtrée par sport
 function displayParcoursList(sportType) {
-    parcoursListSection.innerHTML = ''; // Nettoyer la liste existante
-    const ul = document.createElement('ul');
+    parcoursListSection.innerHTML = `
+        <div class="section-controls">
+            <button id="btn-back-to-sports" class="back-button">Précédent</button>
+            <h2>Nos Parcours pour ${sportType === 'running' ? 'la Course à pied' : 'la Randonnée'}</h2>
+        </div>
+        <ul id="parcours-items-list"></ul>
+    `; // Nettoyer la liste existante et ajouter le bouton de retour dynamiquement
 
-    // Filtrer les parcours en fonction du sport sélectionné
+    // Ré-attacher l'écouteur d'événement au bouton de retour (car il est recréé)
+    document.getElementById('btn-back-to-sports').addEventListener('click', () => {
+        showSection(sportSelectionSection);
+    });
+
+
+    const ul = document.getElementById('parcours-items-list');
+
     const filteredParcours = parcoursList.filter(parcours => parcours.sport === sportType);
 
     if (filteredParcours.length === 0) {
@@ -43,41 +92,42 @@ function displayParcoursList(sportType) {
     } else {
         filteredParcours.forEach(parcours => {
             const li = document.createElement('li');
-            const link = document.createElement('a');
-            link.href = '#';
-            link.textContent = parcours.name;
-            link.onclick = (e) => {
-                e.preventDefault();
-                loadParcours(parcours.id);
-            };
-            li.appendChild(link);
+            li.innerHTML = `
+                <h3>${parcours.name}</h3>
+                <p><strong>Sport :</strong> ${parcours.sport === 'running' ? 'Course à pied' : 'Randonnée'}</p>
+                <button data-gpx="${parcours.gpx}" data-name="${parcours.name}" data-json="${parcours.json}" class="view-map-btn">Voir sur la carte</button>
+            `;
             ul.appendChild(li);
         });
     }
-    parcoursListSection.appendChild(ul);
 
-    // --- Mise à jour : Afficher la liste des parcours et cacher la sélection de sport ---
-    sportSelectionSection.style.display = 'none';
-    parcoursListSection.style.display = 'block';
+    showSection(parcoursListSection); // Affiche la section des parcours
+
+    // Ajouter un gestionnaire d'événements global pour les boutons "Voir sur la carte"
+    ul.addEventListener('click', (event) => {
+        if (event.target.classList.contains('view-map-btn')) {
+            const gpxPath = event.target.getAttribute('data-gpx');
+            const parcoursName = event.target.getAttribute('data-name');
+            const jsonPath = event.target.getAttribute('data-json');
+            loadParcours(parcoursName, gpxPath, jsonPath);
+        }
+    });
 }
 
 
 // Fonction pour charger et afficher un parcours spécifique
-async function loadParcours(parcoursId) {
-    const selectedParcours = parcoursList.find(p => p.id === parcoursId);
-
-    if (!selectedParcours) {
-        console.error('Parcours non trouvé :', parcoursId);
-        return;
-    }
+// Adaptons loadParcours pour prendre le nom, gpx et json directement, car displayParcoursList les aura déjà
+async function loadParcours(parcoursName, gpxPath, jsonPath) {
+    // Arrête le guidage si un guidage précédent était en cours
+    stopGuidance();
 
     // Cacher la liste des parcours et afficher la section carte
-    document.getElementById('parcours-list').style.display = 'none';
-    document.getElementById('map-section').style.display = 'block';
+    showSection(mapSection);
+    document.querySelector('#map-section h2').textContent = `Détail du Parcours : ${parcoursName}`;
 
     // Initialisation de la carte Leaflet
     if (map) {
-        map.remove();
+        map.remove(); // Supprime l'ancienne carte si elle existe
     }
     map = L.map('map').setView([48.8566, 2.3522], 13); // Centré sur Paris par défaut
 
@@ -87,7 +137,7 @@ async function loadParcours(parcoursId) {
 
     // Charger le fichier GPX
     try {
-        const gpxData = await fetch(selectedParcours.gpx).then(response => response.text());
+        const gpxData = await fetch(gpxPath).then(response => response.text());
         const gpxLayer = new L.GPX(gpxData, {
             async: true,
             marker_options: {
@@ -105,18 +155,23 @@ async function loadParcours(parcoursId) {
 
     // Charger le fichier JSON du parcours (pour les POI et les points de guidage)
     try {
-        const parcoursDetails = await fetch(selectedParcours.json).then(response => response.json());
+        const parcoursDetails = await fetch(jsonPath).then(response => response.json());
         console.log('Détails du parcours JSON :', parcoursDetails);
+
+        // Réinitialiser l'état 'triggered' pour tous les POI et points de guidage
+        // Ceci est important pour que les audios se rejouent si on revient sur le même parcours
+        parcoursDetails.pointsInteret.forEach(poi => poi.triggered = false);
+        parcoursDetails.pointsGuidage.forEach(point => point.triggered = false);
 
         // Ajout des marqueurs pour les Points d'Intérêt
         parcoursDetails.pointsInteret.forEach(poi => {
             L.marker([poi.lat, poi.lng])
                 .addTo(map)
-                .bindPopup(`<b><span class="math-inline">\{poi\.titre\}</b\><br\></span>{poi.descriptionTextuelle}`);
+                .bindPopup(`<b>${poi.titre}</b><br>${poi.descriptionTextuelle}`);
         });
 
         // Gérer les boutons de guidage
-        document.getElementById('start-guidance-btn').onclick = () => startGuidance(selectedParcours.id, parcoursDetails);
+        document.getElementById('start-guidance-btn').onclick = () => startGuidance(parcoursName, parcoursDetails);
         document.getElementById('stop-guidance-btn').onclick = stopGuidance;
         document.getElementById('start-guidance-btn').style.display = 'inline-block';
         document.getElementById('stop-guidance-btn').style.display = 'none';
@@ -184,4 +239,33 @@ function checkProximity(lat, lng, parcoursDetails) {
 
     // Vérifier les Points d'Intérêt
     parcoursDetails.pointsInteret.forEach(poi => {
-        // Ajouter une propriété `triggered` pour éviter les déclenchements multiples
+        const poiPosition = L.latLng(poi.lat, poi.lng);
+        if (currentPosition.distanceTo(poiPosition) < radius && !poi.triggered) {
+            console.log('Proximité POI :', poi.titre);
+            poi.triggered = true;
+            playAudio(poi.fichierAudio);
+            document.getElementById('current-info').textContent = `Point d'intérêt : ${poi.titre}`;
+        }
+    });
+
+    // Vérifier les Points de Guidage
+    parcoursDetails.pointsGuidage.forEach(point => {
+        const pointPosition = L.latLng(point.lat, point.lng);
+        const triggerRadius = point.rayonDeclenchement || radius; // Utiliser le rayon défini ou le défaut
+        if (currentPosition.distanceTo(pointPosition) < triggerRadius && !point.triggered) {
+            console.log('Proximité point de guidage :', point.fichierAudio);
+            point.triggered = true;
+            playAudio(point.fichierAudio);
+            document.getElementById('current-info').textContent = `Instruction : ${point.fichierAudio.split('/').pop()}`;
+        }
+    });
+}
+
+// Fonction pour lire un fichier audio
+function playAudio(audioPath) {
+    if (currentAudio) {
+        currentAudio.pause(); // Arrête l'audio précédent s'il y en a un
+    }
+    currentAudio = new Audio(audioPath);
+    currentAudio.play().catch(e => console.error('Erreur de lecture audio :', e));
+}
