@@ -1,1 +1,42 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Guide de Randonnée Audio</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
 
+    <header>
+        <h1>Mon Guide de Randonnée Audio</h1>
+        <p>Découvrez des parcours uniques avec guidage vocal.</p>
+    </header>
+
+    <main>
+        <section id="parcours-list">
+            <h2>Nos Parcours</h2>
+            <p>Chargement des parcours...</p>
+            </section>
+
+        <section id="map-section" style="display:none;">
+            <h2>Détail du Parcours</h2>
+            <div id="map"></div>
+            <div id="controls">
+                <p id="current-info">En attente de démarrage...</p>
+                <button id="start-guidance-btn">Démarrer le guidage</button>
+                <button id="stop-guidance-btn" style="display:none;">Arrêter le guidage</button>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>&copy; 2025 Mon Guide de Randonnée Audio</p>
+    </footer>
+
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>
