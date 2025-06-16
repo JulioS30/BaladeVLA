@@ -18,24 +18,24 @@
         <section id="sport-selection">
             <h2>Choisissez votre Sport</h2>
             <div class="sport-buttons">
-                <button id="btn-running" data-sport="running">Course à pied</button>
-                <button id="btn-hiking" data-sport="hiking">Randonnée</button>
+                <button id="btn-running">Course à pied</button>
+                <button id="btn-hiking">Randonnée</button>
             </div>
         </section>
 
-        ---
-
         <section id="parcours-list" style="display:none;">
-            <h2>Nos Parcours</h2>
+            <div class="section-controls">
+                <button id="btn-back-to-sports" class="back-button">Précédent</button>
+                <h2>Nos Parcours</h2>
+            </div>
             <p>Sélectionnez un parcours ci-dessous.</p>
-            <div id="parcours-container">
-                </div>
         </section>
 
-        ---
-
         <section id="map-section" style="display:none;">
-            <h2>Détail du Parcours</h2>
+            <div class="section-controls">
+                <button id="btn-back-to-parcours" class="back-button">Précédent</button>
+                <h2>Détail du Parcours</h2>
+            </div>
             <div id="map"></div>
             <div id="controls">
                 <p id="current-info">En attente de démarrage...</p>
@@ -51,72 +51,6 @@
 
     <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet-gpx/1.7.0/gpx.min.js"></script>
-    <script>
-        // Simuler des données de parcours (normalement, cela viendrait d'une API ou d'un fichier)
-        const allParcours = [
-            { id: 'lac', name: 'Parcours du Lac', sport: 'running', distance: '5 km', difficulty: 'facile', description: 'Idéal pour une sortie rapide.' },
-            { id: 'foret', name: 'Boucle de la Forêt', sport: 'running', distance: '10 km', difficulty: 'moyenne', description: 'Avec quelques dénivelés.' },
-            { id: 'cretes', name: 'Chemin des Crêtes', sport: 'running', distance: '15 km', difficulty: 'difficile', description: 'Pour les coureurs expérimentés.' },
-            { id: 'douaniers', name: 'Sentier des Douaniers', sport: 'hiking', distance: '8 km', difficulty: 'facile', description: 'Le long de la côte.' },
-            { id: 'pic', name: 'Montée du Pic', sport: 'hiking', distance: '12 km', difficulty: 'moyenne', description: 'Avec un point de vue panoramique.' },
-            { id: 'gorges', name: 'Traversée des Gorges', sport: 'hiking', distance: '20 km', difficulty: 'difficile', description: 'Exploration de paysages sauvages.' },
-        ];
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const sportSelectionSection = document.getElementById('sport-selection');
-            const parcoursListSection = document.getElementById('parcours-list');
-            const parcoursContainer = document.getElementById('parcours-container');
-            const mapSection = document.getElementById('map-section');
-            const btnRunning = document.getElementById('btn-running');
-            const btnHiking = document.getElementById('btn-hiking');
-
-            // Fonction pour afficher les parcours selon le sport sélectionné
-            function displayParcours(sport) {
-                parcoursContainer.innerHTML = ''; // Vider les parcours précédents
-
-                const filteredParcours = allParcours.filter(parcours => parcours.sport === sport);
-
-                if (filteredParcours.length > 0) {
-                    filteredParcours.forEach(parcours => {
-                        const parcoursDiv = document.createElement('div');
-                        parcoursDiv.classList.add('parcours-item'); // Ajoutez une classe pour le style si besoin
-                        parcoursDiv.innerHTML = `
-                            <h3>${parcours.name} (${parcours.sport === 'running' ? 'Course à pied' : 'Randonnée'})</h3>
-                            <p>Distance: ${parcours.distance} | Difficulté: ${parcours.difficulty}</p>
-                            <p>${parcours.description}</p>
-                            <button class="select-parcours-btn" data-id="${parcours.id}">Voir le parcours</button>
-                        `;
-                        parcoursContainer.appendChild(parcoursDiv);
-
-                        // Ajouter un écouteur d'événements au bouton "Voir le parcours"
-                        parcoursDiv.querySelector('.select-parcours-btn').addEventListener('click', () => {
-                            // Ici, vous pouvez ajouter la logique pour afficher la carte
-                            // et le détail du parcours sélectionné
-                            alert(`Vous avez sélectionné le parcours : ${parcours.name}. La carte sera affichée ici.`);
-                            // Exemple: Cacher la liste des parcours et montrer la carte
-                            parcoursListSection.style.display = 'none';
-                            mapSection.style.display = 'block';
-                            // Dans une vraie application, vous initialiseriez la carte avec les données du parcours
-                        });
-                    });
-                } else {
-                    parcoursContainer.innerHTML = `<p>Aucun parcours disponible pour ce sport.</p>`;
-                }
-
-                // Afficher la section des parcours
-                parcoursListSection.style.display = 'block';
-                // Cacher la sélection de sport
-                sportSelectionSection.style.display = 'none';
-            }
-
-            // Écouteurs d'événements pour les boutons de sport
-            btnRunning.addEventListener('click', () => displayParcours('running'));
-            btnHiking.addEventListener('click', () => displayParcours('hiking'));
-        });
-
-        // Le reste de votre code JavaScript pour la carte (Leaflet, GPX, etc.)
-        // ira ici, potentiellement dans une fonction qui est appelée quand un parcours est sélectionné.
-        // Par exemple, une fonction `loadMapForParcours(parcoursId)`
-    </script>
+    <script src="js/main.js"></script>
 </body>
 </html>
