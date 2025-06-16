@@ -8,9 +8,6 @@ let lastSportSelected = null; // Pour savoir quel sport était sélectionné ava
 // Liste des parcours disponibles (vous ajouterez vos fichiers JSON ici)
 const parcoursList = [
     { id: 'salon_test', name: 'Salon test (Course)', sport: 'running', json: 'parcours/Salon/test.json', gpx: 'parcours/Salon/test.gpx' },
-    { id: 'parcours_rando_1', name: 'Rando Facile (Rando)', sport: 'hiking', json: 'parcours/Rando/rando_facile.json', gpx: 'parcours/Rando/rando_facile.gpx' },
-    { id: 'parcours_course_2', name: 'Course Urbaine (Course)', sport: 'running', json: 'parcours/Course/course_urbaine.json', gpx: 'parcours/Course/course_urbaine.gpx' },
-    { id: 'parcours_rando_2', name: 'Montagne Douce (Rando)', sport: 'hiking', json: 'parcours/Rando/montagne_douce.json', gpx: 'parcours/Rando/montagne_douce.gpx' },
     // Ajoutez d'autres parcours ici avec leur propriété 'sport'
 ];
 
