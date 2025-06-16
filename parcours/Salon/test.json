@@ -9,6 +9,7 @@
       "titre": "Pinède St-Léon",
       "descriptionTextuelle": "Admirez la pinède Saint-Léon, son parcours santé et son accrobranche.",
       "fichierAudio": "parcours/Salon/audio/pinede.mp3",
+      "rayonDeclenchement": 50",
       "triggered": false
     },
   ],
