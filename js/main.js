@@ -7,7 +7,7 @@ let currentAudio = null; // Pour gérer l'audio en cours de lecture
 // Liste des parcours disponibles (vous ajouterez vos fichiers JSON ici)
 // Exemple : une liste simple de chemins vers les JSON de parcours
 const parcoursList = [
-    { id: 'cretes', name: 'Les Crêtes du Soleil', json: 'parcours/parcours_cretes/cretes.json', gpx: 'parcours/parcours_cretes/cretes.gpx' },
+    { id: 'salon_test', name: 'Salon test', json: 'parcours/Salon/test.json', gpx: 'parcours/Salon/test.gpx' },
     // Ajoutez d'autres parcours ici au fur et à mesure
     // { id: 'riviere', name: 'Bord de Rivière', json: 'parcours/parcours_riviere/riviere.json', gpx: 'parcours/parcours_riviere/riviere.gpx' },
 ];
