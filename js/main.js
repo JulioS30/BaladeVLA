@@ -273,7 +273,7 @@ function startGuidance() {
     currentParcoursData.pointsGuidage.forEach(point => point.triggered = false);
 
 
-    // Options pour la géolocalisation
+    /// Options pour la géolocalisation
     const geoOptions = {
         enableHighAccuracy: true, // Demande la meilleure précision
         maximumAge: 1000,         // Accepte une position d'il y a 1 seconde max
@@ -287,17 +287,10 @@ function startGuidance() {
             const lng = position.coords.longitude;
             const heading = position.coords.heading; // Direction en degrés (0-360)
             const accuracy = position.coords.accuracy; // Récupérer la précision
-            // Optionnel : Définir un seuil de précision minimum acceptable
-            const MIN_ACCURACY = 20; // En mètres, ajustez selon vos besoins
 
-            if (accuracy > MIN_ACCURACY) {
-            currentInfo.textContent = `Amélioration de la précision... (${accuracy.toFixed(0)}m)`;
-            // Vous pouvez choisir de ne pas mettre à jour la carte ou de ne pas déclencher d'audio si la précision est trop faible
-            // Ou vous pouvez afficher un cercle de précision autour du marqueur utilisateur
-            // L.circle([lat, lng], {radius: accuracy}).addTo(map);
-            console.warn(`Position imprécise: ${accuracy.toFixed(0)}m. En attente d'une meilleure précision.`);
-            return; // Ne pas traiter cette position si elle est trop imprécise
-        }
+            // **MODIFIÉ/AJOUTÉ : La flèche est toujours affichée.**
+            // Le message indique si la précision est faible, mais le marqueur reste.
+            const MIN_ACCURACY = 20; // En mètres, seuil pour afficher l'avertissement de précision
 
             const currentPosition = L.latLng(lat, lng);
 
@@ -309,35 +302,25 @@ function startGuidance() {
             }
 
             // Faire pivoter la flèche si la direction est disponible
-            if (heading !== null && heading !== undefined) {
-                // Leaflet par défaut utilise la rotation CSS sur l'élément img de l'icône
-                // Nous devons cibler l'élément DOM de l'icône dans le marqueur
+            if (heading !== null && heading !== undefined && !isNaN(heading)) { // AJOUTÉ: Vérification isNaN
                 const iconElement = userMarker._icon;
                 if (iconElement) {
-                    // Applique la rotation en degrés
                     iconElement.style.transform = `translate(-50%, -50%) rotate(${heading}deg)`;
-                    // La transformation translate(-50%, -50%) est nécessaire si iconAnchor est au centre,
-                    // pour s'assurer que la rotation se fait autour du centre de l'icône.
-                    // Leaflet gère souvent cela, mais il est bon de le préciser.
                 }
             } else {
-                 // Si le cap n'est pas disponible, réinitialisez la rotation
+                 // Si le cap n'est pas disponible, réinitialisez la rotation (ou laissez le par défaut)
                 const iconElement = userMarker._icon;
                 if (iconElement) {
-                     iconElement.style.transform = `translate(-50%, -50%) rotate(0deg)`; // Flèche vers le haut par défaut
+                     iconElement.style.transform = `translate(-50%, -50%) rotate(0deg)`; // ou retirez la transformation
                 }
             }
-
-
-            // Centrer la carte sur l'utilisateur si c'est la première position ou si le guidage est en cours
-            // map.setView(currentPosition, map.getZoom() || 15); // Garde le zoom actuel ou met 15
 
             // Centrer et ajuster le zoom pour inclure le parcours et l'utilisateur
             if (currentParcoursLayer) {
                 const parcoursBounds = currentParcoursLayer.getBounds();
                 if (parcoursBounds.isValid()) {
                     const combinedBounds = parcoursBounds.extend(currentPosition);
-                    map.fitBounds(combinedBounds, { padding: [50, 50] }); // Marge autour des limites
+                    map.fitBounds(combinedBounds, { padding: [50, 50] });
                 } else {
                     map.setView(currentPosition, map.getZoom() || 15);
                 }
@@ -345,15 +328,20 @@ function startGuidance() {
                 map.setView(currentPosition, map.getZoom() || 15);
             }
 
+            // Affichage de l'information, y compris la précision
+            if (accuracy > MIN_ACCURACY) {
+                currentInfo.textContent = `Position: ${lat.toFixed(5)}, ${lng.toFixed(5)} (Précision: ${accuracy.toFixed(0)}m - Amélioration...)`;
+            } else {
+                currentInfo.textContent = `Position: ${lat.toFixed(5)}, ${lng.toFixed(5)} (Précision: ${accuracy.toFixed(0)}m)`;
+            }
 
-            currentInfo.textContent = `Position: ${lat.toFixed(5)}, ${lng.toFixed(5)} (Précision: ${accuracy.toFixed(0)}m)`; // Afficher la précision
-            checkProximity(currentPosition);
+            checkProximity(currentPosition); // Vérifier la proximité des points
         },
         error => {
             console.error('Erreur de géolocalisation:', error);
             currentInfo.textContent = `Erreur GPS: ${error.message}. Vérifiez les permissions.`;
-            // Si l'erreur est GEOLOCATION_PERMISSION_DENIED (1), le watchPosition ne rappellera plus.
-            // Il faudrait gérer le cas où l'utilisateur refuse.
+            // Le marqueur n'est pas supprimé ici, il reste à la dernière position valide s'il y en avait une
+            // ou n'apparaît pas si aucune position n'a jamais été obtenue.
         },
         geoOptions
     );

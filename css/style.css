@@ -282,6 +282,7 @@ footer {
     width: 30px;
     height: 30px;
     transition: transform 0.1s linear;
+    transform-origin: center center;
 }
 
 
