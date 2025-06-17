@@ -4,10 +4,10 @@
   "description": "Parcours test de 5km.",
   "pointsInteret": [
     {
-      "lat": 43.635823,
-      "lng": 5.106614,
-      "titre": "Pinède St-Léon",
-      "descriptionTextuelle": "Admirez la pinède Saint-Léon, son parcours santé et son accrobranche.",
+      "lat": 43.63618,
+      "lng": 5.10313,
+      "titre": "Test vue",
+      "descriptionTextuelle": "Admirez la vue.",
       "fichierAudio": "parcours/Salon/parcours_pinede/audio/vue.mp3",
       "rayonDeclenchement": 50,
       "triggered": false

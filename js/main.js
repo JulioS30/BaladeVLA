@@ -32,9 +32,9 @@ const parcoursData = [
     */
     {
         id: 'pinede_st_leon',
-        name: 'Pinède Saint-Léon',
+        name: 'Test rapide',
         type: 'course',
-        description: "Découvrez la magnifique pinède Saint-Léon avec son parcours santé et son accrobranche.",
+        description: "Test rapide.",
         json: 'parcours/Salon/parcours_pinede/pinede.json', // Nouveau JSON pour la pinède
         gpx: 'parcours/Salon/parcours_pinede/pinede.gpx' // Nouveau GPX pour la pinède
     }
