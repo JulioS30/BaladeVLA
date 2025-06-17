@@ -211,3 +211,31 @@ footer {
         margin-right: 0;
     }
 }
+/* Nouvelle règle CSS pour l'icône de la flèche de l'utilisateur */
+/* Il est important que cette classe soit appliquée à l'image de la flèche */
+.user-direction-icon {
+    width: 30px; /* Taille de l'icône, ajustez si nécessaire */
+    height: 30px; /* Taille de l'icône, ajustez si nécessaire */
+    transition: transform 0.1s linear; /* Douceur de la rotation */
+}
+/* Styles pour les éléments de liste de parcours cliquables */
+.parcours-item-clickable {
+    cursor: pointer; /* Indique que l'élément est cliquable */
+    padding: 10px;
+    border: 1px solid #eee;
+    border-radius: 5px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.parcours-item-clickable:hover {
+    background-color: #e9e9e9;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.parcours-item-clickable h3 {
+    margin-top: 0;
+    color: #007bff; /* Rend le titre un peu plus visible comme un lien */
+}
+

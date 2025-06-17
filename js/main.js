@@ -95,15 +95,22 @@ function showParcoursForSport(sportType) {
     } else {
         filteredParcours.forEach(parcours => {
             const listItem = document.createElement('li');
-            listItem.innerHTML = `
+            // DÉBUT DE L'AJOUT
+            const clickableDiv = document.createElement('div');
+            clickableDiv.classList.add('parcours-item-clickable'); // Ajoutez une classe pour le style CSS
+            clickableDiv.dataset.parcoursId = parcours.id; // Stocker l'ID pour le clic
+
+            clickableDiv.innerHTML = `
                 <h3>${parcours.name}</h3>
                 <p>${parcours.description}</p>
                 <p>Distance: <span id="distance-${parcours.id}">Chargement...</span></p>
                 <p>Dénivelé: <span id="denivele-${parcours.id}">Chargement...</span></p>
             `;
-            listItem.dataset.parcoursId = parcours.id; // Stocker l'ID pour le clic
-            listItem.addEventListener('click', () => loadParcours(parcours.id));
-            parcoursUl.appendChild(listItem);
+
+            clickableDiv.addEventListener('click', () => loadParcours(parcours.id)); // Attacher l'écouteur au div
+            listItem.appendChild(clickableDiv); // Ajouter le div cliquable au li
+            // FIN DE L'AJOUT
+            parcoursUl.appendChild(listItem); // Cette ligne était déjà là, elle reste.
 
             // Charger les détails du GPX pour chaque parcours listé
             // La distance et le dénivelé sont chargés pour l'affichage dans la liste
