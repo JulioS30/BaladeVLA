@@ -280,32 +280,36 @@ function startGuidance() {
     currentParcoursData.pointsInteret.forEach(poi => poi.triggered = false);
     currentParcoursData.pointsGuidage.forEach(point => point.triggered = false);
 
+    // DÉBUT DE LA MODIFICATION
+    // S'assurer que la section de la carte est visible avant d'appliquer les classes fullscreen
+    showSection('map-section'); // Assurez-vous que cette fonction est bien appelée
 
-    /// Options pour la géolocalisation
-    const geoOptions = {
-        enableHighAccuracy: true, // Demande la meilleure précision
-        maximumAge: 1000,         // Accepte une position d'il y a 1 seconde max
-        timeout: 5000             // Délai maximum pour obtenir une position
-    };
+    // Activer le mode plein écran de la carte
+    document.body.classList.add('fullscreen-map-active');
+    mainContent.classList.add('fullscreen-map-active');
+    mapSection.classList.add('fullscreen');
 
-    // AJOUTÉ : Activer le mode plein écran de la carte
-    document.body.classList.add('fullscreen-map-active'); // Ajoute une classe au body
-    mainContent.classList.add('fullscreen-map-active'); // Ajoute une classe au main
-    mapSection.classList.add('fullscreen'); // Ajoute une classe à la section carte
-    btnBackToParcours.style.display = 'none'; // Masquer le bouton de retour
-    parcoursDetailTitle.style.display = 'none'; // Masquer le titre
-    parcoursDetailInfo.style.display = 'none'; // Masquer les infos de distance/dénivelé
-    controlsSection.style.position = 'absolute'; // Positionner les contrôles sur la carte
-    controlsSection.style.bottom = '10px'; // Positionner en bas
+    // Forcer la carte à prendre la nouvelle taille et se redessiner IMMÉDIATEMENT APRÈS avoir appliqué les styles de plein écran
+    map.invalidateSize();
+
+    // Masquer les éléments de l'interface non nécessaires en mode plein écran
+    btnBackToParcours.style.display = 'none';
+    parcoursDetailTitle.style.display = 'none';
+    parcoursDetailInfo.style.display = 'none';
+
+    // Positionner les contrôles sur la carte en mode plein écran (CSS les positionne déjà en absolute)
+    // On peut retirer ces lignes ici si le CSS gère déjà la position absolute et le z-index
+    // Sinon, assurez-vous que controlsSection.style.position = 'absolute'; est appliqué via la classe .fullscreen
+    // et que les autres propriétés sont gérées par le CSS.
+    // Laissez-les si vous préférez un contrôle direct ici, mais le CSS est généralement plus propre.
+    controlsSection.style.position = 'absolute';
+    controlsSection.style.bottom = '10px';
     controlsSection.style.left = '50%';
     controlsSection.style.transform = 'translateX(-50%)';
-    controlsSection.style.zIndex = '1000'; // S'assurer qu'il est au-dessus de la carte
-    controlsSection.style.width = 'calc(100% - 20px)'; // Pleine largeur
-    controlsSection.style.maxWidth = '400px'; // Limiter la largeur sur grand écran
-    // Ajuster la position de #current-info aussi si nécessaire dans le CSS pour le mode plein écran
-
-    // Forcer la carte à prendre la nouvelle taille et recentrer
-    map.invalidateSize();
+    controlsSection.style.zIndex = '1000';
+    controlsSection.style.width = 'calc(100% - 20px)';
+    controlsSection.style.maxWidth = '400px';
+    // FIN DE LA MODIFICATION
 
     // AJOUTÉ : Demander la permission pour DeviceOrientation API pour iOS 13+
     if (typeof DeviceOrientationEvent.requestPermission === 'function') {
