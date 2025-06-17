@@ -339,9 +339,26 @@ function startGuidance() {
         },
         error => {
             console.error('Erreur de géolocalisation:', error);
-            currentInfo.textContent = `Erreur GPS: ${error.message}. Vérifiez les permissions.`;
-            // Le marqueur n'est pas supprimé ici, il reste à la dernière position valide s'il y en avait une
-            // ou n'apparaît pas si aucune position n'a jamais été obtenue.
+            let errorMessage = "Erreur de géolocalisation inconnue. Assurez-vous que les services de localisation sont activés et que vous avez donné la permission.";
+
+            switch (error.code) {
+                case error.PERMISSION_DENIED:
+                    errorMessage = "Accès à la position refusé. Veuillez autoriser la géolocalisation pour cette application dans les paramètres de votre navigateur et de votre téléphone (Paramètres > Confidentialité > Services de localisation).";
+                    break;
+                case error.POSITION_UNAVAILABLE:
+                    errorMessage = "Position indisponible. Le signal GPS est faible ou inexistant. Essayez de vous déplacer à l'extérieur ou dans un endroit dégagé.";
+                    break;
+                case error.TIMEOUT:
+                    errorMessage = "Délai de géolocalisation dépassé. Impossible d'obtenir une position rapidement. Vérifiez votre connexion ou réessayez.";
+                    break;
+                case error.UNKNOWN_ERROR:
+                    errorMessage = "Une erreur inconnue est survenue lors de la géolocalisation.";
+                    break;
+            }
+            currentInfo.textContent = `Erreur GPS: ${errorMessage}`;
+            // Optionnel : Désactiver le bouton "Arrêter le guidage" si une erreur grave se produit
+            // et réactiver le bouton "Démarrer le guidage"
+            stopGuidance(); // Arrête le watchPosition pour éviter de continuer à échouer
         },
         geoOptions
     );
