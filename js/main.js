@@ -286,6 +286,18 @@ function startGuidance() {
             const lat = position.coords.latitude;
             const lng = position.coords.longitude;
             const heading = position.coords.heading; // Direction en degrés (0-360)
+            const accuracy = position.coords.accuracy; // Récupérer la précision
+            // Optionnel : Définir un seuil de précision minimum acceptable
+            const MIN_ACCURACY = 20; // En mètres, ajustez selon vos besoins
+
+            if (accuracy > MIN_ACCURACY) {
+            currentInfo.textContent = `Amélioration de la précision... (${accuracy.toFixed(0)}m)`;
+            // Vous pouvez choisir de ne pas mettre à jour la carte ou de ne pas déclencher d'audio si la précision est trop faible
+            // Ou vous pouvez afficher un cercle de précision autour du marqueur utilisateur
+            // L.circle([lat, lng], {radius: accuracy}).addTo(map);
+            console.warn(`Position imprécise: ${accuracy.toFixed(0)}m. En attente d'une meilleure précision.`);
+            return; // Ne pas traiter cette position si elle est trop imprécise
+        }
 
             const currentPosition = L.latLng(lat, lng);
 
@@ -334,8 +346,8 @@ function startGuidance() {
             }
 
 
-            currentInfo.textContent = `Position: ${lat.toFixed(5)}, ${lng.toFixed(5)}`;
-            checkProximity(currentPosition); // Vérifier la proximité des points
+            currentInfo.textContent = `Position: ${lat.toFixed(5)}, ${lng.toFixed(5)} (Précision: ${accuracy.toFixed(0)}m)`; // Afficher la précision
+            checkProximity(currentPosition);
         },
         error => {
             console.error('Erreur de géolocalisation:', error);
