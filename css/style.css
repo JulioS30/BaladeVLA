@@ -346,3 +346,100 @@ footer {
         width: 100%;
     }
 }
+/* AJOUTÉ : Styles pour le mode plein écran de la carte */
+body.fullscreen-map-active {
+    overflow: hidden; /* Empêche le défilement de la page */
+}
+
+body.fullscreen-map-active header,
+body.fullscreen-map-active footer,
+body.fullscreen-map-active main:not(#map-section) {
+    display: none; /* Masque l'en-tête et le pied de page, et le contenu principal */
+}
+
+body.fullscreen-map-active main {
+    padding: 0; /* Supprime le padding du main pour le plein écran */
+    margin: 0; /* Supprime les marges */
+    max-width: 100%; /* S'assure que main prend toute la largeur */
+    height: 100vh; /* Prend toute la hauteur de la vue */
+    border-radius: 0; /* Supprime les arrondis */
+    box-shadow: none; /* Supprime l'ombre */
+    display: flex; /* Utilise flexbox pour centrer la carte */
+    flex-direction: column;
+}
+
+#map-section.fullscreen {
+    position: fixed; /* Fixe la carte en haut de la fenêtre */
+    top: 0;
+    left: 0;
+    width: 100vw; /* Prend toute la largeur de la vue */
+    height: 100vh; /* Prend toute la hauteur de la vue */
+    z-index: 999; /* S'assure que la carte est au-dessus de tout */
+    margin: 0;
+    padding: 0;
+    border-radius: 0;
+    box-shadow: none;
+    display: flex;
+    flex-direction: column; /* Assure que les éléments internes se superposent correctement */
+}
+
+#map-section.fullscreen #map {
+    height: 100%; /* La carte prend toute la hauteur de sa section */
+    width: 100%;
+    margin-top: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* Positionnement des contrôles en mode plein écran */
+#map-section.fullscreen #controls {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1000;
+    width: calc(100% - 20px);
+    max-width: 400px;
+    background-color: rgba(255, 255, 255, 0.9); /* Fond semi-transparent */
+    border-radius: 8px;
+    padding: 10px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+/* S'assurer que le bouton retour et le titre sont masqués */
+#map-section.fullscreen .section-controls .back-button,
+#map-section.fullscreen .section-controls h2 {
+    display: none;
+}
+/* AJOUTÉ : pour masquer les infos de parcours aussi */
+#map-section.fullscreen #parcours-detail-info {
+    display: none;
+}
+
+
+/* AJOUTÉ : Styles pour le marqueur utilisateur qui reste fixe au centre de la carte */
+/* L'icône elle-même est déplacée pour la position sur la carte par Leaflet,
+   mais visuellement elle reste au centre grâce à la manipulation de la carte. */
+.user-direction-icon {
+    width: 30px;
+    height: 30px;
+    transition: transform 0.1s linear;
+    transform-origin: center center; /* S'assure que la rotation est autour du centre */
+}
+
+/*
+Pour les iPhones et la permission de DeviceOrientation :
+Sur iOS 13+, l'accès aux données de mouvement (y compris l'orientation de l'appareil pour le cap)
+nécessite une autorisation explicite de l'utilisateur. Le code JavaScript ci-dessus inclut
+la demande `DeviceOrientationEvent.requestPermission()`. Si cela ne fonctionne pas,
+l'utilisateur devra peut-être autoriser cela dans les réglages de son iPhone :
+Réglages > Safari > Mouvement et Orientation du site web (à activer).
+*/
+
+/* Media query pour ajuster les contrôles en plein écran sur les petits écrans */
+@media (max-width: 480px) {
+    #map-section.fullscreen #controls {
+        width: calc(100% - 10px); /* Un peu plus petit sur les très petits écrans */
+        padding: 8px;
+    }
+}

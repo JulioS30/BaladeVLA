@@ -14,7 +14,8 @@ let userMarkerIcon = L.icon({
     iconAnchor: [15, 15], // Point d'ancrage de l'icône (milieu)
     className: 'user-direction-icon' // Classe CSS pour la rotation
 });
-
+// AJOUTÉ: Variable pour le gestionnaire d'événements DeviceOrientation
+let deviceOrientationListener = null;
 
 // Liste des parcours disponibles (vous pouvez ajouter une propriété 'type' ici)
 const parcoursData = [
@@ -45,14 +46,21 @@ const parcoursDetailDenivele = document.getElementById('parcours-detail-denivele
 const startGuidanceBtn = document.getElementById('start-guidance-btn');
 const stopGuidanceBtn = document.getElementById('stop-guidance-btn');
 const currentInfo = document.getElementById('current-info');
+const mainContent = document.querySelector('main');
+const headerContent = document.querySelector('header');
+const footerContent = document.querySelector('footer');
+const parcoursDetailInfo = document.getElementById('parcours-detail-info');
+const controlsSection = document.getElementById('controls');
 
 
 document.addEventListener('DOMContentLoaded', () => {
     // Initialisation de la carte Leaflet (sans la centrer immédiatement)
     map = L.map('map', { zoomControl: false }); // Désactive le contrôle de zoom par défaut
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-    }).addTo(map);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    subdomains: 'abcd', // Nécessaire pour CartoDB
+    maxZoom: 19
+}).addTo(map);
 
     // Ajout manuel du contrôle de zoom en bas à droite
     L.control.zoom({
@@ -280,6 +288,43 @@ function startGuidance() {
         timeout: 5000             // Délai maximum pour obtenir une position
     };
 
+    // AJOUTÉ : Activer le mode plein écran de la carte
+    document.body.classList.add('fullscreen-map-active'); // Ajoute une classe au body
+    mainContent.classList.add('fullscreen-map-active'); // Ajoute une classe au main
+    mapSection.classList.add('fullscreen'); // Ajoute une classe à la section carte
+    btnBackToParcours.style.display = 'none'; // Masquer le bouton de retour
+    parcoursDetailTitle.style.display = 'none'; // Masquer le titre
+    parcoursDetailInfo.style.display = 'none'; // Masquer les infos de distance/dénivelé
+    controlsSection.style.position = 'absolute'; // Positionner les contrôles sur la carte
+    controlsSection.style.bottom = '10px'; // Positionner en bas
+    controlsSection.style.left = '50%';
+    controlsSection.style.transform = 'translateX(-50%)';
+    controlsSection.style.zIndex = '1000'; // S'assurer qu'il est au-dessus de la carte
+    controlsSection.style.width = 'calc(100% - 20px)'; // Pleine largeur
+    controlsSection.style.maxWidth = '400px'; // Limiter la largeur sur grand écran
+    // Ajuster la position de #current-info aussi si nécessaire dans le CSS pour le mode plein écran
+
+    // Forcer la carte à prendre la nouvelle taille et recentrer
+    map.invalidateSize();
+
+    // AJOUTÉ : Demander la permission pour DeviceOrientation API pour iOS 13+
+    if (typeof DeviceOrientationEvent.requestPermission === 'function') {
+        DeviceOrientationEvent.requestPermission()
+            .then(permissionState => {
+                if (permissionState === 'granted') {
+                    console.log("Device Orientation permission granted.");
+                    startDeviceOrientationTracking();
+                } else {
+                    console.warn("Device Orientation permission denied.");
+                }
+            })
+            .catch(console.error);
+    } else {
+        // Pour les navigateurs qui ne nécessitent pas de permission explicite (ex: Android, anciens iOS)
+        startDeviceOrientationTracking();
+    }
+
+
     // Démarrer le suivi de la position de l'utilisateur
     watchId = navigator.geolocation.watchPosition(
         position => {
@@ -294,38 +339,18 @@ function startGuidance() {
 
             const currentPosition = L.latLng(lat, lng);
 
-            // Créer ou mettre à jour le marqueur de l'utilisateur avec la flèche
+            // Mettre à jour le marqueur de l'utilisateur. Le marqueur reste au centre de l'écran.
+            // La carte se déplacera sous lui.
             if (!userMarker) {
-                userMarker = L.marker(currentPosition, { icon: userMarkerIcon }).addTo(map);
-            } else {
-                userMarker.setLatLng(currentPosition);
+                userMarker = L.marker(map.getCenter(), { icon: userMarkerIcon, interactive: false }).addTo(map);
             }
 
-            // Faire pivoter la flèche si la direction est disponible
-            if (heading !== null && heading !== undefined && !isNaN(heading)) { // AJOUTÉ: Vérification isNaN
-                const iconElement = userMarker._icon;
-                if (iconElement) {
-                    iconElement.style.transform = `translate(-50%, -50%) rotate(${heading}deg)`;
-                }
-            } else {
-                 // Si le cap n'est pas disponible, réinitialisez la rotation (ou laissez le par défaut)
-                const iconElement = userMarker._icon;
-                if (iconElement) {
-                     iconElement.style.transform = `translate(-50%, -50%) rotate(0deg)`; // ou retirez la transformation
-                }
-            }
+            // MODIFIÉ : Centrer la carte sur la nouvelle position de l'utilisateur
+            map.panTo(currentPosition, { animate: true, duration: 1.0 });
 
-            // Centrer et ajuster le zoom pour inclure le parcours et l'utilisateur
-            if (currentParcoursLayer) {
-                const parcoursBounds = currentParcoursLayer.getBounds();
-                if (parcoursBounds.isValid()) {
-                    const combinedBounds = parcoursBounds.extend(currentPosition);
-                    map.fitBounds(combinedBounds, { padding: [50, 50] });
-                } else {
-                    map.setView(currentPosition, map.getZoom() || 15);
-                }
-            } else {
-                map.setView(currentPosition, map.getZoom() || 15);
+            // AJOUTÉ : Si la propriété 'heading' est valide et disponible (venant du GPS)
+            if (heading !== null && heading !== undefined && !isNaN(heading)) {
+                updateUserMarkerRotation(heading);
             }
 
             // Affichage de l'information, y compris la précision
@@ -362,6 +387,9 @@ function startGuidance() {
         },
         geoOptions
     );
+        // Zoomer sur la flèche au démarrage (initialement, elle est au centre de la carte)
+        map.setView(map.getCenter(), 18); // Zoom initial sur 18 (très proche)
+    
 }
 
 // Fonction pour arrêter le guidage
@@ -376,10 +404,33 @@ function stopGuidance() {
         currentAudio.currentTime = 0;
         currentAudio = null;
     }
-    if (userMarker) { // Supprimer le marqueur utilisateur
+    if (userMarker) {
         map.removeLayer(userMarker);
         userMarker = null;
     }
+
+    // AJOUTÉ : Désactiver le mode plein écran de la carte
+    document.body.classList.remove('fullscreen-map-active');
+    mainContent.classList.remove('fullscreen-map-active');
+    mapSection.classList.remove('fullscreen');
+    btnBackToParcours.style.display = 'block'; // Réafficher le bouton de retour
+    parcoursDetailTitle.style.display = 'block'; // Réafficher le titre
+    parcoursDetailInfo.style.display = 'block'; // Réafficher les infos de distance/dénivelé
+    controlsSection.style.position = 'static'; // Remettre en position statique
+    controlsSection.style.bottom = '';
+    controlsSection.style.left = '';
+    controlsSection.style.transform = '';
+    controlsSection.style.zIndex = '';
+    controlsSection.style.width = '';
+    controlsSection.style.maxWidth = '';
+    map.invalidateSize(); // Forcer la carte à se redessiner à sa taille normale
+
+    // AJOUTÉ : Arrêter le suivi de l'orientation de l'appareil
+    if (deviceOrientationListener) {
+        window.removeEventListener('deviceorientation', deviceOrientationListener);
+        deviceOrientationListener = null;
+    }
+
     startGuidanceBtn.style.display = 'block';
     stopGuidanceBtn.style.display = 'none';
 }
@@ -426,4 +477,43 @@ function playAudio(audioPath) {
     }
     currentAudio = new Audio(audioPath);
     currentAudio.play().catch(e => console.error("Erreur de lecture audio:", e));
+}
+
+// AJOUTÉ : Fonction pour mettre à jour la rotation du marqueur utilisateur
+function updateUserMarkerRotation(heading) {
+    if (userMarker) {
+        const iconElement = userMarker._icon;
+        if (iconElement) {
+            // Heading est la direction du mouvement (0-360, Nord=0)
+            // L'icône doit être tournée pour pointer dans cette direction
+            // Si votre flèche pointe vers le haut par défaut, c'est juste `heading`
+            iconElement.style.transform = `translate(-50%, -50%) rotate(${heading}deg)`;
+        }
+    }
+}
+
+// AJOUTÉ : Fonction pour démarrer le suivi de l'orientation de l'appareil
+function startDeviceOrientationTracking() {
+    deviceOrientationListener = function(event) {
+        // `alpha` est l'azimut (direction par rapport au Nord magnétique)
+        // `webkitCompassHeading` est souvent plus fiable sur iOS pour le Nord réel
+        let heading = null;
+
+        if (event.webkitCompassHeading) { // iOS spécifique
+            heading = event.webkitCompassHeading;
+        } else if (event.alpha !== null) { // Android et autres, en tenant compte de `beta` et `gamma`
+            // Pour obtenir un cap absolu depuis `alpha` sur certains appareils, il faut
+            // souvent des calculs plus complexes avec beta et gamma pour la re-projection.
+            // Pour simplifier et si `webkitCompassHeading` n'est pas dispo, on peut juste utiliser alpha.
+            // attention: alpha est relatif au repère de l'appareil, non absolu.
+            // Une calibration est souvent nécessaire.
+            heading = 360 - event.alpha; // Convertir alpha (0 à 360) en direction (0 est Nord)
+        }
+
+        if (heading !== null && !isNaN(heading)) {
+            // Mettre à jour la rotation du marqueur basée sur le cap de l'appareil
+            updateUserMarkerRotation(heading);
+        }
+    };
+    window.addEventListener('deviceorientation', deviceOrientationListener);
 }
