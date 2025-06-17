@@ -8,9 +8,23 @@
       "lng": 5.106614,
       "titre": "Pinède St-Léon",
       "descriptionTextuelle": "Admirez la pinède Saint-Léon, son parcours santé et son accrobranche.",
-      "fichierAudio": "parcours/Salon/parcours_pinede/audio/pinede.mp3",
+      "fichierAudio": "parcours/Salon/parcours_pinede/audio/vue.mp3",
       "rayonDeclenchement": 50,
       "triggered": false
     }
-  ]
+   ],
+    "pointsGuidage": [
+        {
+            "lat": 43.63820,
+            "lng": 5.10224,
+            "fichierAudio": "parcours/Salon/parcours_pinede/audio/tournez_a_droite.mp3",
+            "rayonDeclenchement": 30 
+        },
+        {
+            "lat": 43.63407,
+            "lng": 5.10268,
+            "fichierAudio": "parcours/Salon/parcours_pinede/audio/tournez_a_gauche.mp3",
+            "rayonDeclenchement": 30 
+        }
+    ]
 }
