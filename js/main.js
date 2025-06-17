@@ -8,6 +8,7 @@ let currentParcoursLayer = null; // Pour stocker la couche GPX Leaflet
 
 // Liste des parcours disponibles (vous pouvez ajouter une propriété 'type' ici)
 const parcoursData = [
+    /*
     {
         id: 'cretes',
         name: 'Les Crêtes du Soleil',
@@ -16,6 +17,7 @@ const parcoursData = [
         json: 'parcours/parcours_cretes/cretes.json',
         gpx: 'parcours/parcours_cretes/cretes.gpx'
     },
+    */
     // Ajoutez d'autres parcours ici au fur et à mesure
     // Exemple pour une course à pied :
     /*
@@ -31,10 +33,10 @@ const parcoursData = [
     {
         id: 'pinede_st_leon',
         name: 'Pinède Saint-Léon',
-        type: 'randonnee',
+        type: 'course',
         description: "Découvrez la magnifique pinède Saint-Léon avec son parcours santé et son accrobranche.",
-        json: 'parcours/parcours_pinede/pinede.json', // Nouveau JSON pour la pinède
-        gpx: 'parcours/parcours_pinede/pinede.gpx' // Nouveau GPX pour la pinède
+        json: 'parcours/Salon/parcours_pinede/pinede.json', // Nouveau JSON pour la pinède
+        gpx: 'parcours/Salon/parcours_pinede/pinede.gpx' // Nouveau GPX pour la pinède
     }
 ];
 
