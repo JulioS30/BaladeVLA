@@ -31,7 +31,7 @@ const parcoursData = [
     },
     */
     {
-        id: 'pinede_st_leon',
+        id: 'test_salon',
         name: 'Test rapide',
         type: 'course',
         description: "Test rapide.",
