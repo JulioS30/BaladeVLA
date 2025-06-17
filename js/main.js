@@ -18,21 +18,14 @@ let userMarkerIcon = L.icon({
 
 // Liste des parcours disponibles (vous pouvez ajouter une propriété 'type' ici)
 const parcoursData = [
-    {
-        id: 'cretes',
-        name: 'Les Crêtes du Soleil',
-        type: 'randonnee', // ou 'course' pour la course à pied
-        description: "Un magnifique parcours offrant des vues panoramiques sur la vallée et les montagnes environnantes.",
-        json: 'parcours/parcours_cretes/cretes.json',
-        gpx: 'parcours/parcours_cretes/cretes.gpx'
-    },
+    
     {
         id: 'pinede_st_leon',
-        name: 'Pinède Saint-Léon',
-        type: 'randonnee',
-        description: "Découvrez la magnifique pinède Saint-Léon...",
-        json: 'parcours/parcours_pinede/pinede.json',
-        gpx: 'parcours/parcours_pinede/pinede.gpx'
+        name: 'Test rapide',
+        type: 'course',
+        description: "Circuit rapide",
+        json: 'parcours/Salon/parcours_pinede/pinede.json',
+        gpx: 'parcours/Salon/parcours_pinede/pinede.gpx'
     }
     // Ajoutez d'autres parcours ici au fur et à mesure
 ];
